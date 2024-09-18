@@ -2,13 +2,16 @@ import azure.cognitiveservices.speech as speechsdk
 
 # Replace with your own subscription key and service region (e.g., "westus").
 # Get from config
-speech_key = "your key"
-region = "region"
+speech_key = ""
+region = ""
 
 def synthesize_speech_audio(text):
     # Configure the Azure Text to Speech instance
     speech_config = speechsdk.SpeechConfig(subscription=speech_key, region=region)
-    speech_config.speech_synthesis_voice_name = "en-US-AriaNeural"
+    
+    speechSynthesisVoiceName  = "en-US-AvaMultilingualNeural"; 
+    # "en-US-AriaNeural"
+    speech_config.speech_synthesis_voice_name = speechSynthesisVoiceName
     # audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
     speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=None)
 
