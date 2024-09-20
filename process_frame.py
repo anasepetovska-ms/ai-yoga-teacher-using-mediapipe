@@ -89,12 +89,12 @@ class ProcessFrame:
             
         }
         
-        self.FEEDBACK_ID_MAP = {
-                                0: ('BEND BACKWARDS', 215, (0, 153, 255)),
-                                1: ('BEND FORWARD', 215, (0, 153, 255)),
-                                2: ('KNEE FALLING OVER TOE', 170, (255, 80, 80)),
-                                3: ('SQUAT TOO DEEP', 125, (255, 80, 80))
-                               }
+        # self.FEEDBACK_ID_MAP = {
+        #                         0: ('BEND BACKWARDS', 215, (0, 153, 255)),
+        #                         1: ('BEND FORWARD', 215, (0, 153, 255)),
+        #                         2: ('KNEE FALLING OVER TOE', 170, (255, 80, 80)),
+        #                         3: ('SQUAT TOO DEEP', 125, (255, 80, 80))
+        #                        }
 
         
 
@@ -162,6 +162,66 @@ class ProcessFrame:
        
 
         frame_height, frame_width, _ = frame.shape
+
+        # Process the image.
+        keypoints = pose.process(frame)
+        # Use lm and lmPose as representative of the following methods.
+        lm = keypoints.pose_landmarks
+
+
+        # Acquire the landmark coordinates.  
+        landmark = get_landmark_features(lm, w, h)
+
+
+        # Calculate distance between left shoulder and right shoulder points.
+        offset = findDistance(landmark["LEFT"]["SHOULDER"]["x"], landmark["LEFT"]["SHOULDER"]["y"], landmark["RIGHT"]["SHOULDER"]["x"], landmark["RIGHT"]["SHOULDER"]["y"])
+
+        # Assist to align the camera to point at the side view of the person.
+        # Offset threshold 30 is based on results obtained from analysis over 100 samples.
+        if offset < 100:
+            cv2.putText(image, str(int(offset)) + ' Aligned', (w - 150, 30), font, 0.9, green, 2)
+        else:
+            cv2.putText(image, str(int(offset)) + ' Not Aligned', (w - 150, 30), font, 0.9, red, 2)
+
+        # Calculate angles.
+        inclinations = getInclinations(landmark)
+
+        drawLandmarks(landmark)
+
+        # Put text, Posture and angle inclination.
+        # Text string for display.
+        angle_text_string_upper_body = 'Neck : ' + str(int(inclinations["LEFT"]["NECK"])) + '  Torso : ' + str(int(inclinations["LEFT"]["TORSO"]))
+        angle_text_string_lower_body = 'Upper Leg : ' + str(int(inclinations["LEFT"]["THIGH"])) + '  Lower Leg : ' + str(int(inclinations["LEFT"]["CALF"]))
+        angle_text_string_arms = 'Upper Arm : ' + str(int(inclinations["LEFT"]["UPPERARM"])) + '  Lower Arm : ' + str(int(inclinations["LEFT"]["FOREARM"]))
+
+        # Determine whether good posture or bad posture.
+        # The threshold angles have been set based on intuition.
+        if 110 < inclinations["LEFT"]["NECK"] < 130 \
+            and 110 < inclinations["LEFT"]["TORSO"] < 130 \
+            and 130 < inclinations["LEFT"]["THIGH"] < 150 \
+            and 140 < inclinations["LEFT"]["CALF"] < 160 \
+            and 150 < inclinations["LEFT"]["UPPERARM"] < 170 \
+            and 140 < inclinations["LEFT"]["FOREARM"] < 160:
+            bad_frames = 0
+            good_frames += 1
+            
+            cv2.putText(image, angle_text_string_upper_body, (10, 30), font, 0.5, light_green, 2)
+            cv2.putText(image, angle_text_string_lower_body, (10, 60), font, 0.5, light_green, 2)
+            cv2.putText(image, angle_text_string_arms, (10, 90), font, 0.5, light_green, 2)
+
+            displayAngles(inclinations, landmark, light_green, font)
+            connectLandmarks(landmark, green)
+
+        else:
+            good_frames = 0
+            bad_frames += 1
+
+            cv2.putText(image, angle_text_string_upper_body, (10, 30), font, 0.5, red, 2)
+            cv2.putText(image, angle_text_string_lower_body, (10, 60), font, 0.5, red, 2)
+            cv2.putText(image, angle_text_string_arms, (10, 90), font, 0.5, red, 2)
+
+            displayAngles(inclinations, landmark, red, font)
+            connectLandmarks(landmark, red)
 
         # Process the image.
         keypoints = pose.process(frame)
