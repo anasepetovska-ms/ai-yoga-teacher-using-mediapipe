@@ -114,15 +114,17 @@ def get_landmark_features(kp_results, dict_features, feature, frame_width, frame
         return get_landmark_array(kp_results, dict_features[feature], frame_width, frame_height)
 
     elif feature == 'left' or 'right':
+        ear_coord   = get_landmark_array(kp_results, dict_features[feature]['ear'], frame_width, frame_height)
         shldr_coord = get_landmark_array(kp_results, dict_features[feature]['shoulder'], frame_width, frame_height)
-        elbow_coord   = get_landmark_array(kp_results, dict_features[feature]['elbow'], frame_width, frame_height)
-        wrist_coord   = get_landmark_array(kp_results, dict_features[feature]['wrist'], frame_width, frame_height)
+        elbow_coord = get_landmark_array(kp_results, dict_features[feature]['elbow'], frame_width, frame_height)
+        wrist_coord = get_landmark_array(kp_results, dict_features[feature]['wrist'], frame_width, frame_height)
+        hand_coord  = get_landmark_array(kp_results, dict_features[feature]['hand'], frame_width, frame_height)
         hip_coord   = get_landmark_array(kp_results, dict_features[feature]['hip'], frame_width, frame_height)
-        knee_coord   = get_landmark_array(kp_results, dict_features[feature]['knee'], frame_width, frame_height)
-        ankle_coord   = get_landmark_array(kp_results, dict_features[feature]['ankle'], frame_width, frame_height)
-        foot_coord   = get_landmark_array(kp_results, dict_features[feature]['foot'], frame_width, frame_height)
+        knee_coord  = get_landmark_array(kp_results, dict_features[feature]['knee'], frame_width, frame_height)
+        ankle_coord = get_landmark_array(kp_results, dict_features[feature]['ankle'], frame_width, frame_height)
+        foot_coord  = get_landmark_array(kp_results, dict_features[feature]['foot'], frame_width, frame_height)
 
-        return shldr_coord, elbow_coord, wrist_coord, hip_coord, knee_coord, ankle_coord, foot_coord
+        return ear_coord, shldr_coord, elbow_coord, wrist_coord, hand_coord, hip_coord, knee_coord, ankle_coord, foot_coord
     
     else:
        raise ValueError("feature needs to be either 'nose', 'left' or 'right")
