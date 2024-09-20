@@ -5,6 +5,11 @@ from utils import find_angle, get_landmark_features, draw_text, draw_dotted_line
 
 def isGoodAsana(angles, asana):
     LEFT, RIGHT = "LEFT", "RIGHT"
+    if asana == "test":
+        return  ( 80 < angles[LEFT]["ELBOW"] < 100 \
+            and 90 < angles[LEFT]["WRIST"] < 110) \
+            or (80 < angles[RIGHT]["ELBOW"] < 100 \
+            and 90 < angles[RIGHT]["WRIST"] < 110)
     if asana == "downdog":
         return 110 < angles[LEFT]["HIP"] < 130 \
             and 130 < angles[LEFT]["KNEE"] < 150 \
@@ -290,14 +295,14 @@ class ProcessFrame:
                         "ANKLE": left_ankle_vertical_angle,
                     },
                     "RIGHT": {
-                        "ELBOW": left_elbow_vertical_angle,
-                        "WRIST": left_wrist_vertical_angle,
-                        "HIP": left_hip_vertical_angle,
-                        "KNEE": left_knee_vertical_angle,
-                        "ANKLE": left_ankle_vertical_angle,
+                        "ELBOW": right_elbow_vertical_angle,
+                        "WRIST": right_wrist_vertical_angle,
+                        "HIP": right_hip_vertical_angle,
+                        "KNEE": right_knee_vertical_angle,
+                        "ANKLE": right_ankle_vertical_angle,
                     }
                 }
-                if isGoodAsana(angles, "downdog"):
+                if isGoodAsana(angles, "test"):
                     color = self.COLORS['light_blue']
 
                 # Join landmarks.
