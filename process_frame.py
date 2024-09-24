@@ -74,8 +74,6 @@ class ProcessFrame:
                         'light_blue' : (102, 204, 255)
                       }
 
-
-
         # Dictionary to maintain the various landmark features.
         self.dict_features = {}
         self.left_features = {
@@ -302,7 +300,7 @@ class ProcessFrame:
                         "ANKLE": right_ankle_vertical_angle,
                     }
                 }
-                if isGoodAsana(angles, "test"):
+                if isGoodAsana(angles, "tree"):
                     color = self.COLORS['light_blue']
 
                 # Join landmarks.
@@ -402,16 +400,12 @@ class ProcessFrame:
                 draw_dotted_line(frame, hip_coord, start=hip_coord[1]-80, end=hip_coord[1]+20, line_color=self.COLORS['blue'])
 
 
-
-
                 knee_vertical_angle = find_angle(hip_coord, np.array([knee_coord[0], 0]), knee_coord)
                 cv2.ellipse(frame, knee_coord, (20, 20), 
                             angle = 0, startAngle = -90, endAngle = -90-multiplier*knee_vertical_angle, 
                             color = self.COLORS['white'], thickness = 3,  lineType = self.linetype)
 
                 draw_dotted_line(frame, knee_coord, start=knee_coord[1]-50, end=knee_coord[1]+20, line_color=self.COLORS['blue'])
-
-
 
                 ankle_vertical_angle = find_angle(knee_coord, np.array([ankle_coord[0], 0]), ankle_coord)
                 cv2.ellipse(frame, ankle_coord, (30, 30),

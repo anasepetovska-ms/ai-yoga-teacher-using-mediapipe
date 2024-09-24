@@ -41,33 +41,43 @@ def define_pose_type(poses):
     poses['type']=poses.procedure_str.str.findall(types,  flags=re.IGNORECASE)
 
 
-def create_pose_type_list(poses, type):
-    posesList = []
+def create_pose_type_dict(poses, type):
+    posesDict = dict()
     for i in range(0, len(poses)):
         if (isinstance(poses.iloc[i]['type'], list) and (type in poses.iloc[i]['type'])): # or 'Base' in poses.iloc[i]['type'])):
             
             cues = poses.iloc[i]['procedure_str'].replace('[','').replace(']','').replace("'", '').replace(',','')
-            posesList.append(poses.iloc[i]['english_name'] + '. ' + cues)
-    return posesList
+            posesDict[poses.iloc[i]['english_name']]= cues
+    return posesDict
 
-def generate_sequence_index(flowSequence, action, max, poses_count):
+def create_pose_dict(poses):
+    posesDict = dict()
+    for i in range(0, len(poses)):
+        cues = poses.iloc[i]['procedure_str'].replace('[','').replace(']','').replace("'", '').replace(',','')
+        posesDict[poses.iloc[i]['english_name']]= cues
+    return posesDict
+
+def generate_random_sequence_index(flowSequence, action, max, poses_count):
         for i in range(0, max):
             index = random.randint(0, poses_count-1)
             flowSequence.append((action, index))
+
+# def generate_select_sequence_index(flowSequence, action, pose):
+
 
 def generate_sequence():
 
     poses = load_poses_dataset()
     define_pose_type(poses)
    
-    sitting_poses = create_pose_type_list(poses, 'Sit')
-    standing_poses = create_pose_type_list(poses, 'Stand')
-    laying_poses = create_pose_type_list(poses, 'Lie')
+    sitting_poses = create_pose_type_dict(poses, 'Sit')
+    standing_poses = create_pose_type_dict(poses, 'Stand')
+    laying_poses = create_pose_type_dict(poses, 'Lie')
 
     flow_sequence = []
-    generate_sequence_index(flow_sequence, 'Sit', 0, len(sitting_poses) )
-    generate_sequence_index(flow_sequence, 'Stand', 2, len(standing_poses) )
-    generate_sequence_index(flow_sequence, 'Sit', 0, len(laying_poses) )
+    generate_random_sequence_index(flow_sequence, 'Sit', 0, len(sitting_poses) )
+    generate_random_sequence_index(flow_sequence, 'Stand', 0, len(standing_poses) )
+    generate_random_sequence_index(flow_sequence, 'Sit', 0, len(laying_poses) )
 
     # return flow_sequence
 
@@ -84,6 +94,13 @@ def generate_sequence():
             flow.append(standing_poses[flow_sequence[i][1]])
         if flow_sequence[i][0] == 'Lie':
             flow.append(laying_poses[flow_sequence[i][1]])
+    
+    # print(standing_poses)
+    poses_dict = create_pose_dict(poses)
+    # flow.append(poses_dict['Tree'])
+    flow.append('Welcome to your yoga flow. Begin with ')
+    flow.append('Downward-Facing Dog')
+    flow.append(poses_dict['Downward-Facing Dog'])
 
     return flow
 
